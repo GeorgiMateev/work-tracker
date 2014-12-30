@@ -21,6 +21,17 @@ var validateLocalStrategyPassword = function(password) {
 	return (this.provider !== 'local' || (password && password.length > 6));
 };
 
+var ReservedSchema = new Schema({
+	topic: {
+	    type: Schema.ObjectId, 
+	    ref: 'Topic' 
+	},
+	submitted: {
+		type: Boolean,
+		default: false
+	}
+});
+
 /**
  * User Schema
  */
@@ -88,7 +99,8 @@ var UserSchema = new Schema({
 	},
 	resetPasswordExpires: {
 		type: Date
-	}
+	},
+	reserved: [ReservedSchema]
 });
 
 /**

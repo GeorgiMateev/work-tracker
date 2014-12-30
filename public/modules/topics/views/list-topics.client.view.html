@@ -2,18 +2,39 @@
     <div class="page-header">
         <h1>Topics</h1>
     </div>
+
+    <alert ng-repeat="alert in alerts"
+      type="{{alert.type}}"
+      close="closeAlert($index)">{{alert.message}}</alert>
+
     <div class="list-group">
-        <a data-ng-repeat="topic in topics" data-ng-href="#!/topics/{{topic._id}}" class="list-group-item">
-			<small class="list-group-item-text">
-				Posted on
-				<span data-ng-bind="topic.created | date:'medium'"></span>
-				by
-				<span data-ng-bind="topic.user.displayName"></span>
-			</small>
-			<h4 class="list-group-item-heading" data-ng-bind="topic.name"></h4>
-        </a>
+        <div data-ng-repeat="topic in topics" class="list-group-item">
+            <a data-ng-href="#!/topics/{{topic._id}}" >
+                <span class="h3" data-ng-bind="topic.name"></span>
+            </a>
+
+            <button type="button"
+              ng-click="promptReserveTopic(topic)"
+              class="btn btn-primary pull-right"
+              ng-disabled="topic.reserved">Reserve</button>
+        </div>
     </div>
     <div class="alert alert-warning text-center" data-ng-hide="!topics.$resolved || topics.length">
-    	No Topics yet, why don't you <a href="/#!/topics/create">create one</a>?
+        No Topics yet, why don't you <a href="/#!/topics/create">create one</a>?
     </div>
 </section>
+
+<!-- Modal -->
+<script type="text/ng-template" id="prompt-reserve.html">
+    <div class="modal-header">
+      <button type="button" class="close" ng-click="$dismiss()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title">Reserve topic</h4>
+    </div>
+    <div class="modal-body">
+        <span>Are you sure you want to write about this topic?</span>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="$close(true)">Yes, I am sure!</button>
+        <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>      
+    </div>
+</script>

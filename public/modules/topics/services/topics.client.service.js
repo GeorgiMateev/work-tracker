@@ -7,7 +7,11 @@ angular.module('topics').factory('Topics', ['$resource',
 		}, {
 			update: {
 				method: 'PUT'
-			}
+			},
+            reserve: {
+                method: 'PUT',
+                params: { reserve: true}
+            }
 		});
 	}
 ]);

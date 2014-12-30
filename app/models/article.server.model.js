@@ -44,8 +44,15 @@ var articleSchema = {
     file: {
         type: Schema.ObjectId,
         ref: 'Grid'
+    },    
+    topic: {
+        type: Schema.ObjectId,
+        ref: 'Topic'
     },
-    version: Number,
+    version: {
+        type: Number,
+        default: 0
+    },
     grades: [GradeSchema]
 };
 

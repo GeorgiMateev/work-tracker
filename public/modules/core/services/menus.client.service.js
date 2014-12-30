@@ -114,8 +114,10 @@ angular.module('core').service('Menus', [
 						title: menuItemTitle,
 						link: menuItemURL,
 						uiRoute: menuItemUIRoute || ('/' + menuItemURL),
-						isPublic: ((isPublic === null || typeof isPublic === 'undefined') ? this.menus[menuId].items[itemIndex].isPublic : isPublic),
-						roles: ((roles === null || typeof roles === 'undefined') ? this.menus[menuId].items[itemIndex].roles : roles),
+						isPublic: ((isPublic === null || typeof isPublic === 'undefined') ?
+							this.menus[menuId].items[itemIndex].isPublic : isPublic),
+						roles: ((roles === null || typeof roles === 'undefined') ?
+							this.menus[menuId].items[itemIndex].roles : roles),
 						position: position || 0,
 						shouldRender: shouldRender
 					});
