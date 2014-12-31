@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    extend = require('mongoose-schema-extend');
 
 /**
  * Grade Schema
@@ -60,15 +61,11 @@ var ArticleSchema = new Schema(articleSchema);
 
 mongoose.model('Article', ArticleSchema);
 
-var articleHistorySchema = {
+var ArticleHistorySchema =  ArticleSchema.extend({
     originalArticle: {
         type: Schema.ObjectId,
         ref: 'Article'
     }
-};
-// Inherits the ArticleSchema
-articleHistorySchema.prototype = articleSchema;
-
-var ArticleHistorySchema = new Schema(articleHistorySchema);
+});
 
 mongoose.model('ArticleHistory', ArticleHistorySchema);

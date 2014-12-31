@@ -10,12 +10,15 @@ module.exports = function(app) {
 	// Article Routes
 	app.route('/articles')
 		.get(articles.list)
-		.post(users.requiresLogin, articles.create);
+		// Create new version of the article
+		// Edit of an article is not possible because new version is created for every change.
+		.post(users.requiresLogin, articles.create);	
 
+	//Get article
 	app.route('/articles/:articleId')
-		.get(articles.read)
-		.put(users.requiresLogin, articles.hasAuthorization, articles.update)
-		.delete(users.requiresLogin, articles.hasAuthorization, articles.delete);
+		.get(articles.read);
+		//.put(users.requiresLogin, articles.hasAuthorization, articles.update)
+		//.delete(users.requiresLogin, articles.hasAuthorization, articles.delete);
 
 	// Finish by binding the article middleware
 	app.param('articleId', articles.articleByID);

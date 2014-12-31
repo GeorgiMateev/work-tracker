@@ -58,10 +58,11 @@ angular.module('topics').controller('TopicsController',
                 return topics.map(function (topic) {
                     var reserved = Authentication.user.reserved.filter(function (reserved) {
                         return reserved.topic === topic._id;
-                    }).length > 0;
+                    });
 
-                    topic.reserved = reserved;
-                    return topic
+                    topic.reserved = reserved.length > 0;
+                    topic.submitted = reserved[0] && reserved[0].submitted;
+                    return topic;
                 });
             });
         };
