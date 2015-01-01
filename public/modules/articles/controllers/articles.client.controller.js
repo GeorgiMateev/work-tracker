@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('articles').controller('ArticlesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Articles',
-    function($scope, $stateParams, $location, Authentication, Articles) {
+angular.module('articles').controller('ArticlesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Articles', 'Grades',
+    function($scope, $stateParams, $location, Authentication, Articles, Grades) {
         $scope.authentication = Authentication;
 
         $scope.create = function() {
@@ -54,10 +54,31 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
             $scope.article = Articles.get({
                 articleId: $stateParams.articleId
             });
+
+            $scope.article.$promise.then(function (article) {
+                for (var i = 0; i < article.grades.length; i++) {
+                    var grade = article.grades[i];
+                    if (grade.user===Authentication.user._id) {
+                        $scope.hasCommented = true;
+                        $scope.grade = grade;
+                        break;
+                    }
+                }
+            });
         };
 
         $scope.loadHistory = function (article) {
             $scope.history = Articles.history({articleId: article._id});
+        };
+
+        $scope.addReview = function () {
+            var grade = new Grades($scope.grade);
+
+            grade.$save({ articleId: $scope.article._id }, function () {
+               $scope.hasCommented = true;
+            }, function (errorResponse) {
+               $scope.error = errorResponse.data.message; 
+            });
         };
     }
 ]);

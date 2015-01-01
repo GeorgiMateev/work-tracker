@@ -68,7 +68,7 @@ exports.update = function(req, res) {
     var articleData = article.toObject();
     delete articleData._id;
     delete articleData.created;
-    
+
     var oldVersion = new ArticleHistory(articleData);
     oldVersion.originalArticle = article._id;
 
@@ -84,6 +84,43 @@ exports.update = function(req, res) {
 
     //Increase version
     article.version++;
+
+    article.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.json(article);
+        }
+    });
+};
+
+/**
+ * Add a new review to an article
+ */
+exports.review = function (req, res) {
+    var article = req.article;    
+
+    //Catch sync errors only!
+    try {
+        article.grades.forEach(function (grade) {
+            if (grade.user.equals(req.user._id)) {
+                 throw new Error('User can give only one grade per article.');
+            }
+        });
+    }
+    catch (err){
+        return res.status(400).send({
+            message: err
+        });
+    }
+
+    var grade = req.body;
+    grade.userName = req.user.displayName;
+    grade.user = req.user._id;
+
+    article.grades.push(grade);
 
     article.save(function(err) {
         if (err) {

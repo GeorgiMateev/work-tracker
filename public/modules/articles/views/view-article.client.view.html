@@ -9,7 +9,7 @@
         <a class="btn btn-primary" data-ng-click="remove();">
             <i class="glyphicon glyphicon-trash"></i>
         </a>
-    </div>
+    </div>    
     <small>
         <em class="text-muted">
             Posted on
@@ -20,6 +20,77 @@
     </small>
 
     <p class="lead" data-ng-bind="article.content"></p>
+
+    <div class="row"
+      data-ng-show="authentication.user._id != article.user._id">
+        <div class="h4">Reviews</div>
+        
+        <div class="list-group">
+            <div ng-repeat="grade in article.grades" class="list-group-item">
+                <small class="list-group-item-text">
+                    By
+                    <span data-ng-bind="grade.userName"></span>
+                </small>
+                <span class="label label-info pull-right">Grade: {{grade.grade}}</span>
+                <p class="list-group-item-text" ng-bind="grade.comment"></p>                
+            </div>
+        </div>
+
+        <form name="gradeForm"
+          class="form-horizontal col-md-6"
+          data-ng-submit="addReview(gradeForm.$valid)"
+          ng-show="!hasCommented"
+          novalidate>
+            <fieldset>
+                <div class="form-group"
+                  ng-class="{ 'has-error' : submitted && gradeForm.comment.$invalid}">
+                    <label class="control-label" for="comment">Review</label>
+                    <div class="controls">
+                        <textarea 
+                          name="comment" 
+                          data-ng-model="grade.comment"
+                          id="comment"
+                          class="form-control"
+                          placeholder="Comment"
+                          required>
+                        </textarea>
+                    </div>
+                    <div ng-show="submitted && gradeForm.comment.$invalid" class="help-block">
+                        <p ng-show="gradeForm.comment.$error.required" class="text-danger">Comment is required</p>
+                    </div>
+                </div>
+                <div class="form-group"
+                 ng-class="{ 'has-error' : submitted && gradeForm.grade.$invalid}">
+                    <lavel class="conrol-label" for="grade">Grade</lavel>
+                    <div class="control">
+                        <select name="grade" class="form-control" ng-model="grade.grade" required>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                          <option value="6">6</option>
+                        </select>                        
+                    </div>
+                     <div ng-show="submitted && gradeForm.grade.$invalid" class="help-block">
+                        <p ng-show="gradeForm.grade.$error.required" class="text-danger">
+                        Grade is required</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Comment" class="btn btn-warning">
+                </div>
+                <div data-ng-show="error" class="text-danger">
+                    <strong data-ng-bind="error"></strong>
+                </div>
+            </fieldset>
+        </form>
+
+        <div class="col-md-6" ng-show="hasCommented">
+            <span class="h4">Your review</span>
+            <p ng-bind="grade.comment"></p>
+            <span class="label label-info">Grade: {{grade.grade}}</span>
+        </div>
+    </div>
 
     <div class="panel panel-default">
       <div class="panel-heading">History</div>

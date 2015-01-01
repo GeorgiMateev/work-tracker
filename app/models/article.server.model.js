@@ -17,6 +17,7 @@ var GradeSchema = new Schema({
         type: Schema.ObjectId,
         ref: 'User'
     },
+    userName: String
 });
 
 /**

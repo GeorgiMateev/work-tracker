@@ -22,6 +22,9 @@ module.exports = function(app) {
 	app.route('/articles/history/:articleId')
 		.get(articles.history);
 
+	app.route('/review/:articleId')
+		.post(users.requiresLogin, articles.review);
+
 	// Finish by binding the article middleware
 	app.param('articleId', articles.articleByID);
 };
