@@ -38,7 +38,7 @@
                         </div>        
 
                         <form name="gradeForm"
-                          class="form-horizontal col-md-6"
+                          class="form-horizontal col-md-12"
                           data-ng-submit="addReview(gradeForm.$valid)"
                           ng-show="!hasCommented"
                           novalidate>
@@ -53,6 +53,7 @@
                                           id="comment"
                                           class="form-control"
                                           placeholder="Comment"
+                                          rows="7" 
                                           required>
                                         </textarea>
                                     </div>
