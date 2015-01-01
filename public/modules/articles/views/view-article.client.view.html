@@ -33,7 +33,7 @@
                                 <span data-ng-bind="grade.userName"></span>
                             </small>
                             <span class="h4"><span class="label label-info pull-right">Grade: {{grade.grade}}</span></span>
-                            <p class="list-group-item-text" ng-bind="grade.comment"></p>                
+                            <p class="list-group-item-text" ng-bind="grade.comment"></p>
                         </div>        
 
                         <form name="gradeForm"
@@ -111,14 +111,14 @@
               <div class="list-group">
                 <a class="list-group-item"
                     ng-repeat="revision in history"
-                    ng-href="#!/articles/history/{{revision._id}}">
+                    ng-href="#!/articles/revision/{{revision._id}}">
                         <small class="list-group-item-text">
                             Edited on
                             <span data-ng-bind="revision.created | date:'medium'"></span>
                         </small>
                         <span class="badge">{{revision.grades.length}} reviews</span>
                         <h4 class="list-group-item-heading">Version {{revision.version}}</h4>
-                        <p class="list-group-item-text" data-ng-bind="revision.content"></p>
+                        <p class="list-group-item-text" data-ng-bind="revision.title"></p>
                 </a>
               </div>
             </div>

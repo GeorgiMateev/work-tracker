@@ -16,6 +16,10 @@ angular.module('articles').config(['$stateProvider',
 		state('viewArticle', {
 			url: '/articles/:articleId',
 			templateUrl: 'modules/articles/views/view-article.client.view.html'
+		}).		
+		state('viewArticleHistory', {
+			url: '/articles/revision/:revisionId',
+			templateUrl: 'modules/articles/views/view-article-revision.client.view.html'
 		}).
 		state('editArticle', {
 			url: '/articles/:articleId/edit',

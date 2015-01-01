@@ -10,6 +10,54 @@ var mongoose = require('mongoose'),
     _ = require('lodash');
 
 /**
+ * Private methods
+ */
+function update(req, res, article, clearGrades) {
+    // Save the outdated version in the archive collection
+    var articleData = article.toObject();
+    delete articleData._id;
+    delete articleData.created;
+
+    var oldVersion = new ArticleHistory(articleData);
+    oldVersion.originalArticle = article._id;
+
+    oldVersion.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+    });
+
+    // Preserve properties that should not be changed
+    delete req.body._id;
+    delete req.body.__v;
+    delete req.body.version;
+    delete req.body.user;
+    delete req.body.originalArticle;
+    delete req.body.__t;
+
+    article = _.extend(article, req.body);
+
+    //Increase version
+    article.version++;
+
+    if (clearGrades) {
+        article.grades = [];
+    }
+
+    article.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.json(article);
+        }
+    });
+}
+
+/**
  * Create a new version of the article
  */
 exports.create = function(req, res) {
@@ -63,37 +111,7 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
     var article = req.article;
-
-    // Save the outdated version in the archive collection
-    var articleData = article.toObject();
-    delete articleData._id;
-    delete articleData.created;
-
-    var oldVersion = new ArticleHistory(articleData);
-    oldVersion.originalArticle = article._id;
-
-    oldVersion.save(function(err) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        }
-    });
-
-    article = _.extend(article, req.body);
-
-    //Increase version
-    article.version++;
-
-    article.save(function(err) {
-        if (err) {
-            return res.status(400).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        } else {
-            res.json(article);
-        }
-    });
+    update(req, res, article, true);
 };
 
 /**
@@ -188,6 +206,35 @@ exports.history = function(req, res) {
 };
 
 /**
+ * Return a revision of an article
+ */
+exports.revision = function (req, res) {
+    res.json(req.revision);
+};
+
+/**
+ * Restore version of an article
+ */
+exports.restore = function (req, res) {
+    var revision = req.revision;
+    Article.findById(revision.originalArticle)
+        .exec(function(err, article) {
+            if (err) {
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                }); 
+            }
+
+            if (article) {
+                update(req, res, article, false);
+            }
+            else {
+                return new Error('Failed to load article ' + revision.originalArticle);
+            }
+        });
+};
+
+/**
  * Article middleware
  */
 exports.articleByID = function(req, res, next, id) {
@@ -200,10 +247,23 @@ exports.articleByID = function(req, res, next, id) {
 };
 
 /**
+ * Revision middleware
+ */
+exports.revisionByID = function(req, res, next, id) {
+    ArticleHistory.findById(id).populate('user', 'displayName').exec(function(err, revision) {
+        if (err) return next(err);
+        if (!revision) return next(new Error('Failed to load article ' + id));
+        req.revision = revision;
+        next();
+    });
+};
+
+/**
  * Article authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-    if (req.article.user.id !== req.user.id) {
+    var article = req.article || req.revision;
+    if (article.user.id !== req.user.id) {
         return res.status(403).send({
             message: 'User is not authorized'
         });

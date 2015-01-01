@@ -105,7 +105,7 @@ exports.reserve = function (req, res) {
             }
         });
     }
-}
+};
 
 /**
  * Delete an Topic

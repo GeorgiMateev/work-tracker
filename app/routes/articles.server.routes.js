@@ -20,11 +20,16 @@ module.exports = function(app) {
 		.put(users.requiresLogin, articles.hasAuthorization, articles.update);
 
 	app.route('/articles/history/:articleId')
-		.get(articles.history);
+		.get(users.requiresLogin, articles.history);
+
+	app.route('/articles/revision/:revisionId')
+		.get(users.requiresLogin, articles.revision)
+		.put(users.requiresLogin, articles.hasAuthorization, articles.restore);
 
 	app.route('/review/:articleId')
 		.post(users.requiresLogin, articles.review);
 
 	// Finish by binding the article middleware
 	app.param('articleId', articles.articleByID);
+	app.param('revisionId', articles.revisionByID);
 };

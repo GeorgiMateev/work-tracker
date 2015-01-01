@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('articles').controller('ArticlesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Articles', 'Grades',
-    function($scope, $stateParams, $location, Authentication, Articles, Grades) {
+angular.module('articles').controller('ArticlesController', 
+    ['$scope', '$stateParams', '$location', 'Authentication', 'Articles', 'Grades', '$modal',
+    function($scope, $stateParams, $location, Authentication, Articles, Grades, $modal) {
         $scope.authentication = Authentication;
 
         $scope.create = function() {
@@ -56,16 +57,15 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
                 articleId: $stateParams.articleId
             });
 
-            $scope.article.$promise.then(function (article) {
-                for (var i = 0; i < article.grades.length; i++) {
-                    var grade = article.grades[i];
-                    if (grade.user===Authentication.user._id) {
-                        $scope.hasCommented = true;
-                        $scope.grade = grade;
-                        break;
-                    }
-                }
+            markUserReview($scope);
+        };
+
+        $scope.findOneRevision = function() {
+            $scope.article = Articles.revision({
+                revisionId: $stateParams.revisionId
             });
+
+            markUserReview($scope);
         };
 
         $scope.loadHistory = function (article) {
@@ -81,5 +81,37 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
                $scope.error = errorResponse.data.message; 
             });
         };
+
+        $scope.promptRestore = function () {
+            $modal.open({
+                templateUrl: 'prompt-restore.html',
+                scope:$scope
+            })
+            .result
+            .then(function (accepted) {
+                if (accepted) {
+                    var originalArticle = $scope.article.originalArticle;
+                    $scope.article.$restore().then(function () {
+                        $location.path('articles/' + originalArticle)
+                    });
+                }
+            });
+        };    
+
+        /**
+         * Private methods
+         */
+        function markUserReview(scope) {
+            scope.article.$promise.then(function(article) {
+                for (var i = 0; i < article.grades.length; i++) {
+                    var grade = article.grades[i];
+                    if (grade.user === Authentication.user._id) {
+                        scope.hasCommented = true;
+                        scope.grade = grade;
+                        break;
+                    }
+                }
+            });
+        }
     }
 ]);
