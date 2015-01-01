@@ -8,7 +8,12 @@ angular.module('articles').factory('Articles', ['$resource',
 		}, {
 			update: {
 				method: 'PUT'
-			}
+			},
+            history: {
+                method: 'GET',
+                url: 'articles/history/:articleId',
+                isArray:true
+            }
 		});
 	}
 ]);

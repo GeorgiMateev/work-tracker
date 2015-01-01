@@ -19,86 +19,35 @@ exports.create = function(req, res) {
         });
     }
 
-    Article.findOne({
-        $and: [{topic: req.body.topic}, {user: req.user}]
-    }, function (err, article) {
+    var newArticle = new Article(req.body);
+    newArticle.user = req.user;
+    newArticle.topic = req.body.topic;
+    newArticle.save(function (err) {
         if (err) {
-            return res.status(500).send({
-                message: errorHandler.getErrorMessage(err)
-            });
-        }
-
-        // Get the latest version
-        if (article) {
-            //Create new version with the latest changes from the client
-            var newVersion = new Article(req.body);
-            newVersion.user = req.user;
-            newVersion.version = article.version + 1;
-
-            newVersion.save(function(err) {
-                if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
-                }
-                else {
-                    res.json(article);
+           return res.status(400).send({
+               message: errorHandler.getErrorMessage(err)
+           });
+        } else {
+            // Check that the user has submitted article for the given topic.
+            var i;
+            req.user.reserved.forEach(function (reserved, index) {
+                if(reserved.topic.equals(req.body.topic)) {
+                    i = index;
                 }
             });
 
-            // Save the outdated version in the archive collection
-            var oldVersion = new ArticleHistory(article.toObject());
-            oldVersion.originalArticle = article._id;
+            req.user.reserved[i].set('submitted', true);
 
-            oldVersion.save(function(err) {
-                if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
-                }
-            });
-
-            // Delete the outdated version from the collection containing the new versions.
-            article.remove(function(err) {
-                if (err) {
-                    return res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
-                    });
-                }
-            });
-        }
-        else {
-            var newArticle = new Article(req.body);
-            newArticle.user = req.user;
-            newArticle.topic = req.body.topic;
-            newArticle.save(function (err) {
+            req.user.save(function (err) {
                 if (err) {
                    return res.status(400).send({
                        message: errorHandler.getErrorMessage(err)
                    });
-                } else {
-                    // Check that the user has submitted article for the given topic.
-                    var i;
-                    req.user.reserved.forEach(function (reserved, index) {
-                        if(reserved.topic.equals(req.body.topic)) {
-                            i = index;
-                        }
-                    });
-
-                    req.user.reserved[i].set('submitted', true);
-
-                    req.user.save(function (err) {
-                        if (err) {
-                           return res.status(400).send({
-                               message: errorHandler.getErrorMessage(err)
-                           });
-                        }
-                    });
-
-                    res.json(newArticle);
                 }
             });
-        }        
+
+            res.json(newArticle);
+        }
     });
 };
 
@@ -115,7 +64,26 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
     var article = req.article;
 
+    // Save the outdated version in the archive collection
+    var articleData = article.toObject();
+    delete articleData._id;
+    delete articleData.created;
+    
+    var oldVersion = new ArticleHistory(articleData);
+    oldVersion.originalArticle = article._id;
+
+    oldVersion.save(function(err) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        }
+    });
+
     article = _.extend(article, req.body);
+
+    //Increase version
+    article.version++;
 
     article.save(function(err) {
         if (err) {
@@ -150,6 +118,22 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) {
     Article.find().sort('-created').populate('user', 'displayName').exec(function(err, articles) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            res.json(articles);
+        }
+    });
+};
+
+/**
+ * History of given article
+ */
+exports.history = function(req, res) {
+    var article = req.article;
+    ArticleHistory.find({originalArticle: article}).sort('-created').populate('user', 'displayName').exec(function(err, articles) {
         if (err) {
             return res.status(400).send({
                 message: errorHandler.getErrorMessage(err)

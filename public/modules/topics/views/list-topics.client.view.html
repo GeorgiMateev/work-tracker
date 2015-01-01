@@ -17,13 +17,14 @@
               ng-click="promptReserveTopic(topic)"
               class="btn btn-primary pull-right"
               ng-hide="topic.reserved">Reserve</button>
+              
+            <span ng-show="topic.reserved && topic.submitted" class="label label-info pull-right">Submitted</span>
 
             <a ng-href="#!/articles/create/{{topic._id}}" 
               role="button"
-              ng-class="{btn:true, 'btn-success':topic.submitted, 'btn-warning':!topic.submitted, 'pull-right':true}"
-              ng-show="topic.reserved">
-                  <span ng-show="topic.submitted">Edit</span>
-                  <span ng-show="!topic.submitted">Submit</span>
+              ng-class="{btn:true, 'btn-warning':!topic.submitted, 'pull-right':true}"
+              ng-show="topic.reserved && !topic.submitted">
+                  <span>Submit</span>
               </a>
         </div>
     </div>

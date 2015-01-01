@@ -16,9 +16,11 @@ module.exports = function(app) {
 
 	//Get article
 	app.route('/articles/:articleId')
-		.get(articles.read);
-		//.put(users.requiresLogin, articles.hasAuthorization, articles.update)
-		//.delete(users.requiresLogin, articles.hasAuthorization, articles.delete);
+		.get(articles.read)
+		.put(users.requiresLogin, articles.hasAuthorization, articles.update);
+
+	app.route('/articles/history/:articleId')
+		.get(articles.history);
 
 	// Finish by binding the article middleware
 	app.param('articleId', articles.articleByID);
