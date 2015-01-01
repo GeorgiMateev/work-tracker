@@ -14,6 +14,9 @@ module.exports = function(app) {
 		.put(users.requiresLogin, topics.hasAuthorization, topics.update)
 		.delete(users.requiresLogin, topics.hasAuthorization, topics.delete);
 
+	app.route('/topics/reserve/:topicId')
+		.put(users.requiresLogin, topics.reserve)
+
 	// Finish by binding the Topic middleware
 	app.param('topicId', topics.topicByID);
 };

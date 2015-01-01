@@ -10,7 +10,7 @@ angular.module('topics').factory('Topics', ['$resource',
 			},
             reserve: {
                 method: 'PUT',
-                params: { reserve: true}
+                url: 'topics/reserve/:topicId'
             }
 		});
 	}

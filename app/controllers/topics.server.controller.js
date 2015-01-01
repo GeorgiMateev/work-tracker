@@ -9,11 +9,6 @@ var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     _ = require('lodash');
 
-/**
- * Private methods
- */
-
-
 
 /**
  * Create a Topic
@@ -82,6 +77,35 @@ exports.update = function(req, res) {
         });
     }
 };
+
+/**
+ * Reserve a topic by the user
+ */
+exports.reserve = function (req, res) {
+    var topic = req.topic;
+
+    var reserved = req.user.reserved.filter(function (reserved) {
+        return reserved.topic.equals(topic._id);
+    }).length > 0;
+
+    if (reserved) {
+        return res.status(500).send({
+            message: 'You have already reserved the topic.'
+        });
+    }
+    else {
+        req.user.reserved.push({topic: topic._id});
+        req.user.save(function(err) {
+            if (err) {
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.jsonp(topic);
+            }
+        });
+    }
+}
 
 /**
  * Delete an Topic
