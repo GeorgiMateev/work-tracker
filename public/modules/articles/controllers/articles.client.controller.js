@@ -46,8 +46,9 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
             });
         };
 
-        $scope.find = function() {
-            $scope.articles = Articles.query();
+        $scope.find = function(onlyMine) {
+            var param = { filter: onlyMine ? 'my' : 'all' };
+            $scope.articles = Articles.query(param);
         };
 
         $scope.findOne = function() {

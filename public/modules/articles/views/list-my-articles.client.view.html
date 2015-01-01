@@ -1,4 +1,4 @@
-<section data-ng-controller="ArticlesController" data-ng-init="find()">
+<section data-ng-controller="ArticlesController" data-ng-init="find(true)">
     <div class="page-header">
         <h1>Your articles</h1>
     </div>
@@ -13,7 +13,8 @@
             <p class="list-group-item-text" data-ng-bind="article.content"></p>
         </a>
     </div>
-    <div class="alert alert-warning text-center" data-ng-if="articles.$resolved && !articles.length">
-        No articles yet, why don't you <a href="/#!/articles/create">create one</a>?
+    <div class="alert alert-warning text-center"
+      data-ng-if="articles.$resolved && !articles.length">
+        No articles yet.
     </div>
 </section>
