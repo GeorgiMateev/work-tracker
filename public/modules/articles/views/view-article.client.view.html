@@ -22,8 +22,7 @@
     <p class="lead" data-ng-bind="article.content"></p>
 
     <div class="row">
-        <div class="col-md-6"
-          data-ng-show="authentication.user._id != article.user._id">
+        <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">Reviews</div>
                 <div class="panel-body">
@@ -40,7 +39,7 @@
                         <form name="gradeForm"
                           class="form-horizontal col-md-12"
                           data-ng-submit="addReview(gradeForm.$valid)"
-                          ng-show="!hasCommented"
+                          ng-show="!hasCommented && authentication.user._id != article.user._id"
                           novalidate>
                             <fieldset>
                                 <div class="form-group"
@@ -88,7 +87,7 @@
                         </form>
                         
                         
-                        <div class="col-md-6" ng-show="hasCommented" style="margin-top:15px">
+                        <div class="col-md-6 comment-box" ng-show="hasCommented">
                             <span class="h4">Your review</span>
                             <p ng-bind="grade.comment"></p>
                             <span class="h4"><span class="label label-info">Grade: {{grade.grade}}</span></span>

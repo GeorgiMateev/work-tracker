@@ -1,3 +1,7 @@
 .list-group-item {
     word-wrap: break-word;
 }
+
+.comment-box {
+    margin-top: 15px;
+}
