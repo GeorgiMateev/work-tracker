@@ -17,11 +17,13 @@
             </p>
         </div> -->
     </div>
-    <div>
-        <ng-include src="'modules/articles/views/list-my-articles.client.view.html'"></ng-include>
-    </div>
-    <div>
-        <ng-include src="'modules/topics/views/list-topics.client.view.html'"></ng-include>
+    <div class="row">
+        <div class="col-md-6">
+            <ng-include src="'modules/articles/views/list-my-articles.client.view.html'"></ng-include>
+        </div>
+        <div class="col-md-6">
+            <ng-include src="'modules/topics/views/list-topics.client.view.html'"></ng-include>
+        </div>
     </div>
     <div class="well">
         <h2>MEAN.JS Documentation</h2>
