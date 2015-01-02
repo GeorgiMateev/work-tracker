@@ -7,12 +7,12 @@ module.exports = function(app) {
 	// Topics Routes
 	app.route('/topics')
 		.get(topics.list)
-		.post(users.requiresLogin, topics.create);
+		.post(users.requiresLogin, users.hasAuthorization(['administrator']), topics.create);
 
 	app.route('/topics/:topicId')
 		.get(topics.read)
-		.put(users.requiresLogin, topics.hasAuthorization, topics.update)
-		.delete(users.requiresLogin, topics.hasAuthorization, topics.delete);
+		.put(users.requiresLogin, users.hasAuthorization(['administrator']), topics.update)
+		.delete(users.requiresLogin, users.hasAuthorization(['administrator']), topics.delete);
 
 	app.route('/topics/reserve/:topicId')
 		.put(users.requiresLogin, topics.reserve);

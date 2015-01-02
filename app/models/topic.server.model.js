@@ -23,6 +23,9 @@ var TopicSchema = new Schema({
 	user: {
 		type: Schema.ObjectId,
 		ref: 'User'
+	},
+	description : {
+		type: String
 	}
 });
 

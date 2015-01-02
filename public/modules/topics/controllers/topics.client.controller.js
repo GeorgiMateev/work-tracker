@@ -10,7 +10,8 @@ angular.module('topics').controller('TopicsController',
         $scope.create = function() {
             // Create new Topic object
             var topic = new Topics ({
-                name: this.name
+                name: this.name,
+                description: this.description
             });
 
             // Redirect after save
