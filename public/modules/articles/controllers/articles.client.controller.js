@@ -92,7 +92,7 @@ angular.module('articles').controller('ArticlesController',
                 if (accepted) {
                     var originalArticle = $scope.article.originalArticle;
                     $scope.article.$restore().then(function () {
-                        $location.path('articles/' + originalArticle)
+                        $location.path('articles/' + originalArticle);
                     });
                 }
             });
